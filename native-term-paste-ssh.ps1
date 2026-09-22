@@ -108,6 +108,7 @@ function Start-BackgroundWatcher {
 function Install-Tool {
     $null = Find-OpenSsh 'ssh'
     $null = Find-OpenSsh 'scp'
+    Stop-ToolWatcher
 
     [System.IO.Directory]::CreateDirectory($script:InstallDir) | Out-Null
     if (-not $PSCommandPath -or -not (Test-Path -LiteralPath $PSCommandPath)) {
@@ -141,7 +142,12 @@ function Stop-ToolWatcher {
     if (Test-Path -LiteralPath $script:PidPath) {
         $watcherPid = 0
         if ([int]::TryParse((Get-Content -LiteralPath $script:PidPath -Raw).Trim(), [ref]$watcherPid)) {
-            Stop-Process -Id $watcherPid -Force -ErrorAction SilentlyContinue
+            $process = Get-CimInstance Win32_Process -Filter ('ProcessId = {0}' -f $watcherPid) -ErrorAction SilentlyContinue
+            if ($process -and $process.CommandLine -and
+                $process.CommandLine.IndexOf($script:RuntimePath, [StringComparison]::OrdinalIgnoreCase) -ge 0 -and
+                $process.CommandLine -match '(?:^|\s)-Watch(?:\s|$)') {
+                Stop-Process -Id $watcherPid -Force -ErrorAction SilentlyContinue
+            }
         }
         Remove-Item -LiteralPath $script:PidPath -Force -ErrorAction SilentlyContinue
     }
