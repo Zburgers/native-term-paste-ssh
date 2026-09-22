@@ -10,4 +10,4 @@ Please report suspected vulnerabilities privately through GitHub's **Report a vu
 
 ## Data handling
 
-The helper does not transmit clipboard data until the user presses the hotkey. It transfers the resulting PNG to the configured SSH host using the user's OpenSSH client and configuration. It does not send telemetry. Logs contain transfer status, host name, and remote path, not image bytes.
+The helper does not transmit clipboard data until the user presses the hotkey. It transfers the resulting PNG only to the SSH destination tagged on the focused terminal session, using the user's OpenSSH client and configuration. It does not send telemetry. Logs contain transfer status, host name, and remote path, not image bytes.

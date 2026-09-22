@@ -21,6 +21,12 @@ jobs:
             }
             Write-Host "Parsed $file"
           }
+          . .\native-term-paste-ssh.ps1
+          $profileTokens = $null
+          $profileErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseInput((Get-SshProfileBlock), [ref]$profileTokens, [ref]$profileErrors) | Out-Null
+          if ($profileErrors.Count -gt 0) { $profileErrors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+          Write-Host 'Parsed generated SSH profile integration'
 
   parse-powershell-7:
     runs-on: windows-latest
@@ -40,3 +46,9 @@ jobs:
             }
             Write-Host "Parsed $file"
           }
+          . .\native-term-paste-ssh.ps1
+          $profileTokens = $null
+          $profileErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseInput((Get-SshProfileBlock), [ref]$profileTokens, [ref]$profileErrors) | Out-Null
+          if ($profileErrors.Count -gt 0) { $profileErrors | ForEach-Object { Write-Error $_.Message }; exit 1 }
+          Write-Host 'Parsed generated SSH profile integration'
